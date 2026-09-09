@@ -442,13 +442,14 @@ export default function Canvas() {
         x,
         y,
         isLocked: false,
-        lockedBy: null,
+        lockedBy: undefined,
       });
     } catch (err) {
       console.error('[handleShapeDragEnd] Error:', err);
       // Don't show toast for update errors - they're handled gracefully in useShapeSync
       // Just log for debugging
-      if (err.code !== 'not-found') {
+      const errorCode = (err as { code?: string }).code;
+      if (errorCode !== 'not-found') {
         errorLogger.logError('Failed to update shape position', err, { 
           shapeId: id,
           position: { x, y }
@@ -2116,7 +2117,7 @@ export default function Canvas() {
     console.log(`[createPlacementShape] Creating ${placementType} at preview position (${previewShape.x.toFixed(2)}, ${previewShape.y.toFixed(2)})`);
     
     try {
-      const shapeData: Partial<Shape> = {
+      const shapeData: Omit<Shape, 'id' | 'createdAt' | 'updatedAt'> = {
         type: placementType as ShapeType,
         x: previewShape.x,
         y: previewShape.y,
@@ -2124,12 +2125,8 @@ export default function Canvas() {
         height: shapeHeight,
         fill: placementType === 'text' ? 'transparent' : (placementType === 'line' ? '#3498db' : '#3498db'),
         userId: user.uid,
+        text: placementType === 'text' ? 'Text' : undefined,
       };
-
-      // Add default text for text boxes
-      if (placementType === 'text') {
-        shapeData.text = 'Text';
-      }
       
       console.log(`[createPlacementShape] 📝 Shape data:`, shapeData);
 
@@ -2237,7 +2234,7 @@ export default function Canvas() {
       
       if (isValidSize) {
         try {
-          const shapeData: Partial<Shape> = {
+          const shapeData: Omit<Shape, 'id' | 'createdAt' | 'updatedAt'> = {
             type: placementType as ShapeType,
             x: finalX,
             y: finalY,
@@ -2245,12 +2242,8 @@ export default function Canvas() {
             height: shapeHeight,
             fill: placementType === 'text' ? 'transparent' : (placementType === 'line' ? '#3498db' : '#3498db'),
             userId: user.uid,
+            text: placementType === 'text' ? 'Text' : undefined,
           };
-
-          // Add default text for text boxes
-          if (placementType === 'text') {
-            shapeData.text = 'Text';
-          }
 
           await createShape(shapeData);
           console.log(`[DRAG CREATE] Created ${placementType} at (${finalX.toFixed(2)}, ${finalY.toFixed(2)}) with ${placementType === 'line' ? `deltas (${shapeWidth.toFixed(2)}, ${shapeHeight.toFixed(2)})` : `size ${shapeWidth.toFixed(2)}x${shapeHeight.toFixed(2)}`}`);
@@ -2520,10 +2513,10 @@ export default function Canvas() {
                 onDragStart: handleShapeDragStart,
                 onDragMove: handleShapeDragMove,
                 onDragEnd: handleShapeDragEnd,
-                onClick: (id: string, evt?: MouseEvent) => {
-                  // Support shift-click for multi-select
-                  const isShiftPressed = evt?.evt?.shiftKey || false;
-                  selectShape(id, isShiftPressed);
+                onClick: (id: string) => {
+                  // Note: shift-click for multi-select would require event object
+                  // Currently only single select is supported via this path
+                  selectShape(id, false);
                 },
                 onContextMenu: (e: Konva.KonvaEventObject<PointerEvent>) => {
                   handleShapeContextMenu(e, shape.id);

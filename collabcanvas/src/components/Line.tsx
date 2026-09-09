@@ -252,7 +252,6 @@ const Line = React.memo(({
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       onContextMenu={onContextMenu}
-      onTap={handleClick}
       onTransformEnd={onTransformEnd}
       ref={shapeRef}
     >
