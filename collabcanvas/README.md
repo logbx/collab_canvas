@@ -1,101 +1,116 @@
-# CollabCanvas MVP
+# CollabCanvas
 
-A real-time collaborative canvas application built with React, TypeScript, Konva.js, and Firebase.
+A real-time collaborative canvas application built with React, TypeScript, Konva.js, and Firebase. Create and edit shapes together with multiplayer cursors, presence awareness, and sub-100ms sync latency.
 
-## 🚀 Live Demo
+## 🚀 Status
 
-**Deployed URL:** `[To be added after running: firebase deploy --only hosting]`
-
-> **Ready to Deploy!** See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for complete deployment instructions.
+**Active Development** - Core features complete, AI capabilities integrated.
 
 ## ✨ Features
 
-- **Real-time Collaboration**: Multiple users can work on the same canvas simultaneously
-- **Pan & Zoom**: Smooth canvas navigation with mouse drag and scroll  
-- **Shape Creation & Manipulation**: Create, move, and delete rectangle shapes
-- **Delete Shapes**: Delete button + keyboard shortcuts (Delete/Backspace keys)
-- **Object Locking**: Prevent conflicts with automatic object locking during edits
-- **Multiplayer Cursors**: See other users' cursors with names and colors in real-time (<50ms latency)
-- **Presence Awareness**: Real-time user status (🟢 Active, 🟡 Away, 🔴 Offline)
-- **Authentication**: Sign up/login with email/password or Google OAuth
-- **Error Boundary**: Graceful error handling with detailed dev mode information
-- **Performance Monitoring**: FPS counter in development mode
+### Core Collaboration
+- **Real-time Sync**: Multiple users editing simultaneously (<100ms shape sync, <50ms cursor sync)
+- **Multiplayer Cursors**: See collaborators' cursors with names and colors
+- **Presence Awareness**: Real-time user status indicators
+- **Object Locking**: Automatic locking prevents edit conflicts
+- **Authentication**: Email/password and Google OAuth
+
+### Canvas Tools
+- **Multiple Shape Types**: Rectangles, circles, lines, and text boxes
+- **Figma-Style Editing**: Direct manipulation with visual handles
+- **Transform Controls**: Resize, rotate, reposition
+- **Style Panel**: Colors, opacity, stroke, and fill controls
+- **Layer Management**: Z-index ordering with bring-to-front/send-to-back
+- **Alignment Tools**: Align and distribute selected shapes
+- **Copy/Paste**: Full clipboard support
+- **Undo/Redo**: Complete history with keyboard shortcuts
+- **Export**: Download canvas as PNG, SVG, or JSON
+
+### Advanced Features
+- **AI Chat Integration**: Natural language commands to create and modify shapes
+- **Bulk Shape Generation**: Create multiple shapes from patterns
+- **Keyboard Shortcuts**: Comprehensive hotkey support (press `?` to view)
+- **Context Menus**: Right-click for quick actions
+- **Pan & Zoom**: Smooth canvas navigation
 
 ## 🛠 Tech Stack
 
-- **Frontend**: React 19 + TypeScript + Vite
-- **Canvas Rendering**: Konva.js + react-konva
-- **Backend**: Firebase (Authentication, Firestore, Realtime Database)
-- **Hosting**: Firebase Hosting
+- **Frontend**: React 19 + TypeScript 5.9 + Vite 7
+- **Canvas**: Konva.js 10 + react-konva 19
+- **Backend**: Firebase 12 (Auth, Firestore, Realtime Database)
+- **AI**: LangChain + OpenAI (optional, for AI chat features)
+- **Testing**: Vitest + React Testing Library
 
 ## 📋 Prerequisites
 
-- Node.js 20.19+ or 22.12+
-- npm or yarn
-- Firebase account
+- Node.js 22+ (tested on 22.14)
+- npm 10+
+- Firebase account (for backend services)
+- OpenAI API key (optional, only needed for AI chat features)
 
-## 🔧 Setup Instructions
-
-### 1. Clone the Repository
+## 🚀 Quick Start
 
 ```bash
-git clone <your-repo-url>
+# 1. Clone and install
+git clone <repo-url>
 cd collabcanvas
-```
-
-### 2. Install Dependencies
-
-```bash
 npm install
-```
 
-### 3. Configure Firebase
+# 2. Configure environment
+cp .env.example .env.local
+# Edit .env.local with your Firebase credentials
 
-1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Create a new project: "collabcanvas-mvp"
-3. Enable Authentication → Email/Password + Google provider
-4. Create Firestore Database → Start in test mode
-5. Create Realtime Database → Start in test mode
-6. Copy your Firebase config from Project Settings
-
-### 4. Setup Environment Variables
-
-Create a `.env.local` file in the root directory:
-
-```bash
-VITE_FIREBASE_API_KEY=your_api_key_here
-VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id_here
-VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id_here
-VITE_FIREBASE_APP_ID=your_app_id_here
-VITE_FIREBASE_DATABASE_URL=https://your_project_id-default-rtdb.firebaseio.com
-```
-
-### 5. Run Development Server
-
-```bash
+# 3. Run development server
 npm run dev
-```
+# Open http://localhost:5173
 
-Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+# 4. Run tests (optional)
+npm test
 
-### 6. Build for Production
-
-```bash
+# 5. Build for production
 npm run build
 ```
 
-### 7. Deploy to Firebase
+## ⚙️ Configuration
 
-See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for complete deployment instructions.
+### Required: Firebase Setup
 
-**Quick Deploy:**
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable **Authentication** → Email/Password + Google provider
+3. Create **Firestore Database** (start in test mode for development)
+4. Create **Realtime Database** (start in test mode for development)
+5. Get your config from Project Settings → General → Your apps
+
+Edit `.env.local`:
+
 ```bash
-npm install -g firebase-tools
-firebase login
-firebase init hosting
-firebase deploy --only firestore:rules,database,hosting
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:abc123
+VITE_FIREBASE_DATABASE_URL=https://your_project-default-rtdb.firebaseio.com
+```
+
+### Optional: AI Features
+
+Add OpenAI API key to `.env.local` to enable AI chat:
+
+```bash
+VITE_OPENAI_API_KEY=sk-...
+```
+
+Without this key, the app works fully but AI chat will be disabled.
+
+## 📜 Available Scripts
+
+```bash
+npm run dev      # Start dev server (localhost:5173)
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm test         # Run tests
+npm run lint     # Check code quality
 ```
 
 ## 🏗 Architecture
