@@ -21,9 +21,9 @@ interface LineProps {
   onDragEnd: (id: string, x: number, y: number) => void;
   onClick: (id: string) => void;
   onContextMenu?: (e: Konva.KonvaEventObject<PointerEvent>) => void;
-  onTransformEnd?: (e: any) => void;
+  onTransformEnd?: (e: Konva.KonvaEventObject<Event>) => void;
   onEndpointDrag?: (id: string, newWidth: number, newHeight: number, newX: number, newY: number) => void;
-  shapeRef?: (node: any) => void;
+  shapeRef?: (node: Konva.Group | null) => void;
   opacity?: number; // For preview mode
 }
 

@@ -19,8 +19,8 @@ interface RectangleProps {
   onDragEnd: (id: string, x: number, y: number) => void;
   onClick: (id: string) => void;
   onContextMenu?: (e: Konva.KonvaEventObject<PointerEvent>) => void;
-  onTransformEnd?: (e: any) => void;
-  shapeRef?: (node: any) => void;
+  onTransformEnd?: (e: Konva.KonvaEventObject<Event>) => void;
+  shapeRef?: (node: Konva.Group | null) => void;
   opacity?: number;
 }
 
@@ -32,7 +32,7 @@ function Rectangle({
   height,
   fill,
   rotation = 0,
-  isSelected: _isSelected, // Kept for Transformer selection, not used in component
+  isSelected: _isSelected,
   isLocked,
   lockedBy,
   currentUserId,

@@ -27,8 +27,8 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
       setError('');
       setLoading(true);
       await login(email, password);
-    } catch (err: any) {
-      setError(err.message || 'Failed to log in');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to log in');
     } finally {
       setLoading(false);
     }
@@ -39,8 +39,8 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
       setError('');
       setLoading(true);
       await loginWithGoogle();
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in with Google');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
     } finally {
       setLoading(false);
     }
