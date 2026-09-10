@@ -84,9 +84,10 @@ export function parseCommand(input: string): AICommand | null {
  */
 export function describeCommand(command: AICommand): string {
   switch (command.action) {
-    case 'create':
+    case 'create': {
       const color = command.properties?.fill || 'blue';
       return `Creating a ${color} ${command.shapeType}`;
+    }
     case 'delete':
       return 'Deleting selected shape';
     case 'move':

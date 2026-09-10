@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Color palette for user cursors
  * Uses vibrant, distinct colors that are easy to tell apart

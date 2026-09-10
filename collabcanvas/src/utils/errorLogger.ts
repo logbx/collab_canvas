@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Error Logger Utility
  * Tracks and stores recent errors for debugging and analysis

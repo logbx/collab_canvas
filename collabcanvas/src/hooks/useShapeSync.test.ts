@@ -11,14 +11,14 @@ describe('useShapeSync', () => {
     vi.clearAllMocks();
     
     // Mock doc to return a mock document reference
-    vi.mocked(firestore.doc).mockReturnValue({ id: 'mock-doc-ref' } as any);
+    vi.mocked(firestore.doc).mockReturnValue({ id: 'mock-doc-ref' } as firestore.DocumentReference);
     
     // Mock onSnapshot to immediately call callback with empty snapshot
     vi.mocked(firestore.onSnapshot).mockImplementation((ref, onNext) => {
       if (typeof onNext === 'function') {
         onNext({
           docs: [],
-        } as any);
+        } as firestore.QuerySnapshot);
       }
       return vi.fn(); // Return unsubscribe function
     });
@@ -76,7 +76,7 @@ describe('useShapeSync', () => {
               updatedAt: Date.now(),
             }),
           }],
-        } as any);
+        } as firestore.QuerySnapshot);
       }
       return vi.fn();
     });
@@ -134,7 +134,7 @@ describe('useShapeSync', () => {
               updatedAt: Date.now(),
             }),
           }],
-        } as any);
+        } as firestore.QuerySnapshot);
       }
       return vi.fn();
     });

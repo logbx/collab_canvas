@@ -56,7 +56,7 @@ function generateGridLayout(
   count: number,
   shapeType: string,
   size: number,
-  _canvasDims: { width: number; height: number }
+  _canvasDims: { width: number; height: number } // eslint-disable-line @typescript-eslint/no-unused-vars
 ): ShapePosition[] {
   const shapes: ShapePosition[] = [];
   const cols = Math.ceil(Math.sqrt(count));

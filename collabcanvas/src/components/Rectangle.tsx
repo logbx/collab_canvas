@@ -32,7 +32,7 @@ function Rectangle({
   height,
   fill,
   rotation = 0,
-  isSelected: _isSelected,
+  isSelected: _isSelected, // eslint-disable-line @typescript-eslint/no-unused-vars
   isLocked,
   lockedBy,
   currentUserId,

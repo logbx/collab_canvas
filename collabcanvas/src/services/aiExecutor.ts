@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * AI Executor - Execute OpenAI Function Calls on Canvas
  * 
@@ -42,7 +43,7 @@ export interface ExecutionResult {
  */
 export async function executeFunction(
   functionName: string,
-  args: any,
+  args: Record<string, unknown>,
   operations: CanvasOperations
 ): Promise<ExecutionResult> {
   try {
@@ -96,23 +97,24 @@ export async function executeFunction(
           error: 'Unknown function',
         };
     }
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as Error;
     return {
       success: false,
-      message: `Error executing ${functionName}: ${error.message}`,
-      error: error.message,
+      message: `Error executing ${functionName}: ${err.message}`,
+      error: err.message,
     };
   }
 }
 
 // ==================== CREATION FUNCTIONS ====================
 
-async function createShape(args: any, ops: CanvasOperations): Promise<ExecutionResult> {
+async function createShape(args: Record<string, unknown>, ops: CanvasOperations): Promise<ExecutionResult> {
   const { shapeType, x, y, width, height, fill, text, stroke, rotation } = args;
   
   // Validate shape type
   const validTypes: ShapeType[] = ['rectangle', 'circle', 'text', 'line'];
-  if (!validTypes.includes(shapeType)) {
+  if (!validTypes.includes(shapeType as ShapeType)) {
     return {
       success: false,
       message: `Invalid shape type: ${shapeType}`,
@@ -129,7 +131,7 @@ async function createShape(args: any, ops: CanvasOperations): Promise<ExecutionR
   if (shapeType === 'text' && !fill) {
     finalFill = 'transparent';
   } else {
-    finalFill = fill ? resolveColor(fill) : '#3498db';
+    finalFill = fill ? resolveColor(String(fill)) : '#3498db';
   }
 
   // For circles, ensure width = height (diameter)
@@ -154,7 +156,7 @@ async function createShape(args: any, ops: CanvasOperations): Promise<ExecutionR
 
   // Only add optional fields if they're defined (Firestore doesn't accept undefined)
   if (finalText !== undefined) shapeData.text = finalText;
-  if (stroke) shapeData.stroke = resolveColor(stroke);
+  if (stroke) shapeData.stroke = resolveColor(String(stroke));
 
   await ops.createShape(shapeData);
 
