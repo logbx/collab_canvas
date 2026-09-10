@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * AI Service - OpenAI Function Calling Integration
  * 
@@ -160,18 +159,19 @@ export async function processAICommand(
       functionCalls: functionCallCount,
     };
 
-  } catch (error: any) {
-    console.error('[AI Service] Error:', error);
+  } catch (error) {
+    const err = error as { status?: number; code?: string; message?: string };
+    console.error('[AI Service] Error:', err);
     
     // Provide helpful error messages
-    if (error.status === 401) {
+    if (err.status === 401) {
       throw new Error('Invalid OpenAI API key. Please check your .env.local file.');
-    } else if (error.status === 429) {
+    } else if (err.status === 429) {
       throw new Error('Rate limit exceeded. Please try again in a moment.');
-    } else if (error.code === 'ENOTFOUND' || error.message?.includes('network')) {
+    } else if (err.code === 'ENOTFOUND' || err.message?.includes('network')) {
       throw new Error('Network error. Please check your internet connection.');
     } else {
-      throw new Error(`AI service error: ${error.message || 'Unknown error'}`);
+      throw new Error(`AI service error: ${err.message || 'Unknown error'}`);
     }
   }
 }

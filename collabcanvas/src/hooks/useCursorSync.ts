@@ -83,25 +83,30 @@ export function useCursorSync(
   }, [userId]);
 
   // Throttled cursor update function
+  // Create throttled function outside useCallback to avoid type conflicts
+  const throttledCursorUpdate = throttle((x: number, y: number) => {
+    if (!cursorRef.current || !userId) {
+      return;
+    }
+
+    const cursorData: CursorPosition = {
+      x,
+      y,
+      userId,
+      userName,
+      color: userColor,
+      timestamp: Date.now(),
+    };
+
+    set(cursorRef.current, cursorData).catch((err) => {
+      console.error('[useCursorSync] Error updating cursor:', err);
+    });
+  }, CURSOR_UPDATE_THROTTLE_MS);
+
   const updateCursor = useCallback(
-    throttle((x: number, y: number) => {
-      if (!cursorRef.current || !userId) {
-        return;
-      }
-
-      const cursorData: CursorPosition = {
-        x,
-        y,
-        userId,
-        userName,
-        color: userColor,
-        timestamp: Date.now(),
-      };
-
-      set(cursorRef.current, cursorData).catch((err) => {
-        console.error('[useCursorSync] Error updating cursor:', err);
-      });
-    }, CURSOR_UPDATE_THROTTLE_MS),
+    (x: number, y: number) => {
+      throttledCursorUpdate(x, y);
+    },
     [userId, userName, userColor]
   );
 

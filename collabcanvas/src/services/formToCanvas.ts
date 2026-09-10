@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Form to Canvas Converter
  * 
@@ -21,8 +20,9 @@
  */
 
 import type { FormDefinition, FormComponent, CanvasFormComponent } from '../types/formLayout.types';
-import { getDesignTokens, gridSpacing, FORM_DIMENSIONS } from './designTokens';
+import { getDesignTokens, gridSpacing, FORM_DIMENSIONS, type DesignTokenSet } from './designTokens';
 import type { CanvasOperations } from './aiExecutor';
+import type { Shape } from '../types/shape.types';
 
 /**
  * Convert form definition to canvas shapes and create them
@@ -132,7 +132,7 @@ export async function renderFormToCanvas(
   for (const shape of shapesToCreate) {
     try {
       // Build shape data, only including defined fields (Firestore doesn't accept undefined)
-      const shapeData: any = {
+      const shapeData: Omit<Shape, 'id' | 'createdAt' | 'updatedAt'> = {
         type: getShapeType(shape.type),
         x: shape.x,
         y: shape.y,
@@ -143,8 +143,8 @@ export async function renderFormToCanvas(
       };
       
       // Only add optional fields if they're defined
-      if (shape.text !== undefined) shapeData.text = shape.text;
-      if (shape.textColor !== undefined) shapeData.textColor = shape.textColor;
+      if (shape.text !== undefined) (shapeData as Shape).text = shape.text;
+      if (shape.textColor !== undefined) (shapeData as Shape).textColor = shape.textColor;
       if (shape.stroke !== undefined) shapeData.stroke = shape.stroke;
       if (shape.zIndex !== undefined) shapeData.zIndex = shape.zIndex;
       
@@ -177,7 +177,7 @@ function renderComponent(
   x: number,
   y: number,
   width: number,
-  tokens: any
+  tokens: DesignTokenSet
 ): CanvasFormComponent[] {
   const shapes: CanvasFormComponent[] = [];
   
@@ -218,7 +218,7 @@ function renderText(
   x: number,
   y: number,
   width: number,
-  tokens: any
+  tokens: DesignTokenSet
 ): CanvasFormComponent[] {
   const variant = component.props.variant || 'body';
   const value = component.props.value || 'Text';
@@ -263,7 +263,7 @@ function renderInput(
   x: number,
   y: number,
   width: number,
-  tokens: any
+  tokens: DesignTokenSet
 ): CanvasFormComponent[] {
   const shapes: CanvasFormComponent[] = [];
   const inputHeight = FORM_DIMENSIONS.inputHeight;
@@ -322,7 +322,7 @@ function renderButton(
   x: number,
   y: number,
   width: number,
-  tokens: any
+  tokens: DesignTokenSet
 ): CanvasFormComponent[] {
   const shapes: CanvasFormComponent[] = [];
   const buttonHeight = FORM_DIMENSIONS.buttonHeight;
@@ -388,7 +388,7 @@ function renderCheckbox(
   x: number,
   y: number,
   width: number,
-  tokens: any
+  tokens: DesignTokenSet
 ): CanvasFormComponent[] {
   const shapes: CanvasFormComponent[] = [];
   const checkboxSize = 20;
@@ -432,7 +432,7 @@ function renderContainer(
   x: number,
   y: number,
   width: number,
-  tokens: any
+  tokens: DesignTokenSet
 ): CanvasFormComponent[] {
   return [{
     id: crypto.randomUUID(),
@@ -455,7 +455,7 @@ function renderShape(
   x: number,
   y: number,
   width: number,
-  tokens: any
+  tokens: DesignTokenSet
 ): CanvasFormComponent {
   return {
     id: crypto.randomUUID(),

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Error Logger Utility
  * Tracks and stores recent errors for debugging and analysis
@@ -9,7 +8,7 @@ export interface ErrorLog {
   message: string;
   code?: string;
   stack?: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   severity: 'error' | 'warning' | 'info';
 }
 
@@ -20,7 +19,7 @@ class ErrorLogger {
   /**
    * Log an error
    */
-  logError(message: string, error?: Error | any, context?: Record<string, any>) {
+  logError(message: string, error?: Error & { code?: string }, context?: Record<string, unknown>) {
     const log: ErrorLog = {
       timestamp: Date.now(),
       message,
@@ -45,7 +44,7 @@ class ErrorLogger {
   /**
    * Log a warning
    */
-  logWarning(message: string, context?: Record<string, any>) {
+  logWarning(message: string, context?: Record<string, unknown>) {
     const log: ErrorLog = {
       timestamp: Date.now(),
       message,
@@ -65,7 +64,7 @@ class ErrorLogger {
   /**
    * Log info message
    */
-  logInfo(message: string, context?: Record<string, any>) {
+  logInfo(message: string, context?: Record<string, unknown>) {
     const log: ErrorLog = {
       timestamp: Date.now(),
       message,

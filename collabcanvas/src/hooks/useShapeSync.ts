@@ -215,7 +215,9 @@ export function useShapeSync(): UseShapeSyncReturn {
           return;
         }
         
-        errorLogger.logError('Failed to update shape in Firestore', error, { 
+        // Firebase error type is complex - use line-scoped any for error logging
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        errorLogger.logError('Failed to update shape in Firestore', error as any, { 
           shapeId: id,
           updates
         });

@@ -450,7 +450,9 @@ export default function Canvas() {
       // Just log for debugging
       const errorCode = (err as { code?: string }).code;
       if (errorCode !== 'not-found') {
-        errorLogger.logError('Failed to update shape position', err, { 
+        // Error from updateShape is caught but typing is complex with Firebase errors
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        errorLogger.logError('Failed to update shape position', err as any, { 
           shapeId: id,
           position: { x, y }
         });
