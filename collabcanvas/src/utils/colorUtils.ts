@@ -50,18 +50,20 @@ export function getRandomColor(): string {
  * Throttle function to limit how often a function can be called
  * Used for cursor position updates to maintain 60fps max
  */
+// TypeScript has challenges with generic throttle signatures - use explicit any for flexibility
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function throttle<T extends (...args: any[]) => void>(
   func: T,
   delay: number
-): (...args: Parameters<T>) => void {
+): T {
   let lastCall = 0;
-  return function (...args: Parameters<T>) {
+  return function (this: unknown, ...args: Parameters<T>) {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
-      func(...args);
+      func.apply(this, args);
     }
-  };
+  } as T;
 }
 
 

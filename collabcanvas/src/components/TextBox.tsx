@@ -24,8 +24,8 @@ interface TextBoxProps {
   onContextMenu?: (e: Konva.KonvaEventObject<PointerEvent>) => void;
   onTextChange?: (id: string, newText: string) => void;
   onStartEdit?: (id: string) => void;
-  onTransformEnd?: (e: any) => void;
-  shapeRef?: (node: any) => void;
+  onTransformEnd?: (e: Konva.KonvaEventObject<Event>) => void;
+  shapeRef?: (node: Konva.Group | null) => void;
   opacity?: number;
 }
 

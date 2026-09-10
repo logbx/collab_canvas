@@ -88,16 +88,17 @@ export function useShapeSync(): UseShapeSyncReturn {
         await setDoc(shapeDocRef, newShape);
         
         console.log(`[createShape] Shape ${newShape.id} synced to Firestore`);
-      } catch (err: any) {
-        console.error('[createShape] Error syncing to Firestore:', err);
-        errorLogger.logError('Failed to create shape in Firestore', err, { 
+      } catch (err) {
+        const error = err as Error;
+        console.error('[createShape] Error syncing to Firestore:', error);
+        errorLogger.logError('Failed to create shape in Firestore', error, { 
           shapeId: newShape.id,
           position: { x: newShape.x, y: newShape.y }
         });
         // Rollback on error
         setShapes((prev) => prev.filter((s) => s.id !== newShape.id));
-        setError(err.message);
-        throw err;
+        setError(error.message);
+        throw error;
       }
     },
     []
@@ -150,14 +151,15 @@ export function useShapeSync(): UseShapeSyncReturn {
 
       console.log(`[createShapesBatch] Successfully created ${created} shapes`);
       return created;
-      } catch (err: any) {
-        console.error('[createShapesBatch] Error creating shapes:', err);
-        errorLogger.logError('Failed to create shapes in batch', err, {
+      } catch (err) {
+        const error = err as Error;
+        console.error('[createShapesBatch] Error creating shapes:', error);
+        errorLogger.logError('Failed to create shapes in batch', error, {
           totalShapes: shapesData.length,
           created,
         });
-        setError(err.message);
-        throw err;
+        setError(error.message);
+        throw error;
       }
     },
     []
@@ -196,11 +198,12 @@ export function useShapeSync(): UseShapeSyncReturn {
         });
         
         console.log(`[updateShape] Shape ${id} synced to Firestore`);
-      } catch (err: any) {
-        console.error('[updateShape] Error syncing to Firestore:', err);
+      } catch (err) {
+        const error = err as { code?: string; message: string };
+        console.error('[updateShape] Error syncing to Firestore:', error);
         
         // Handle specific error cases
-        if (err.code === 'not-found') {
+        if (error.code === 'not-found') {
           console.warn(`[updateShape] Document not found - shape ${id} may have been deleted by another user`);
           errorLogger.logWarning('Attempted to update non-existent shape', { 
             shapeId: id,
@@ -212,12 +215,14 @@ export function useShapeSync(): UseShapeSyncReturn {
           return;
         }
         
-        errorLogger.logError('Failed to update shape in Firestore', err, { 
+        // Firebase error type is complex - use line-scoped any for error logging
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        errorLogger.logError('Failed to update shape in Firestore', error as any, { 
           shapeId: id,
           updates
         });
-        setError(err.message);
-        throw err;
+        setError(error.message);
+        throw error;
       }
     },
     []
@@ -240,19 +245,20 @@ export function useShapeSync(): UseShapeSyncReturn {
         await deleteDoc(shapeDocRef);
         
         console.log(`[deleteShape] Shape ${id} removed from Firestore successfully`);
-      } catch (err: any) {
-        console.error('[deleteShape] Error syncing to Firestore:', err);
-        console.error('[deleteShape] Error code:', err.code);
-        console.error('[deleteShape] Error message:', err.message);
+      } catch (err) {
+        const error = err as { code?: string; message: string };
+        console.error('[deleteShape] Error syncing to Firestore:', error);
+        console.error('[deleteShape] Error code:', error.code);
+        console.error('[deleteShape] Error message:', error.message);
         
         // Check if it's a permission error or not found error
-        if (err.code === 'permission-denied') {
+        if (error.code === 'permission-denied') {
           console.error('[deleteShape] Permission denied - check Firestore rules');
           // Rollback optimistic update on permission error
           setShapes(originalShapes);
-          setError(err.message);
-          throw err;
-        } else if (err.code === 'not-found') {
+          setError(error.message);
+          throw error;
+        } else if (error.code === 'not-found') {
           console.warn('[deleteShape] Document not found - may have been already deleted by another user');
           // Don't throw error if document doesn't exist (it's already gone)
           // Keep the optimistic update since the end result is the same
@@ -261,8 +267,8 @@ export function useShapeSync(): UseShapeSyncReturn {
         
         // For other errors, log but don't rollback (let Firestore sync handle it)
         console.warn('[deleteShape] Unknown error, but continuing (Firestore sync will correct if needed)');
-        setError(err.message);
-        throw err;
+        setError(error.message);
+        throw error;
       }
     },
     [shapes]
@@ -284,11 +290,12 @@ export function useShapeSync(): UseShapeSyncReturn {
         // Update shape to remove lock (use null instead of undefined for Firestore compatibility)
         await updateShape(id, {
           isLocked: false,
-          lockedBy: null as any, // Firestore doesn't accept undefined, so use null
+          lockedBy: null as unknown as string, // Firestore doesn't accept undefined, so use null
         });
-      } catch (err: any) {
+      } catch (err) {
+        const error = err as { code?: string };
         // If shape was deleted, that's fine - no need to unlock it
-        if (err.code === 'not-found') {
+        if (error.code === 'not-found') {
           console.warn(`[unlockShape] Shape ${id} no longer exists - already deleted`);
           return;
         }
@@ -325,16 +332,17 @@ export function useShapeSync(): UseShapeSyncReturn {
           isLocked: true,
           lockedBy: userId,
         });
-      } catch (err: any) {
+      } catch (err) {
+        const error = err as { code?: string };
         // If shape was deleted while we tried to lock it, clear the timeout
-        if (err.code === 'not-found') {
+        if (error.code === 'not-found') {
           console.warn(`[lockShape] Shape ${id} no longer exists - cannot lock`);
           clearTimeout(timeout);
           lockTimeouts.current.delete(id);
           return;
         }
         // Re-throw other errors
-        throw err;
+        throw error;
       }
     },
     [updateShape, unlockShape]

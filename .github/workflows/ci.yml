@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test, Lint, and Build
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./collabcanvas
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: ./collabcanvas/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --run
+        env:
+          # Mock Firebase config for tests (not actual keys)
+          VITE_FIREBASE_API_KEY: ci-mock-key
+          VITE_FIREBASE_AUTH_DOMAIN: ci-mock.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: ci-mock-project
+          VITE_FIREBASE_STORAGE_BUCKET: ci-mock.appspot.com
+          VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789'
+          VITE_FIREBASE_APP_ID: 1:123456789:web:abcdef
+          VITE_FIREBASE_DATABASE_URL: https://ci-mock.firebaseio.com
+          # OpenAI key not required for tests
+          VITE_OPENAI_API_KEY: ci-mock-openai-key
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # Mock Firebase config for build (not actual keys)
+          VITE_FIREBASE_API_KEY: ci-mock-key
+          VITE_FIREBASE_AUTH_DOMAIN: ci-mock.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: ci-mock-project
+          VITE_FIREBASE_STORAGE_BUCKET: ci-mock.appspot.com
+          VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789'
+          VITE_FIREBASE_APP_ID: 1:123456789:web:abcdef
+          VITE_FIREBASE_DATABASE_URL: https://ci-mock.firebaseio.com
+          VITE_OPENAI_API_KEY: ci-mock-openai-key

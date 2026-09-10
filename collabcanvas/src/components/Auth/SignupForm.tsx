@@ -38,8 +38,8 @@ export default function SignupForm({ onToggleForm }: SignupFormProps) {
       setError('');
       setLoading(true);
       await signup(email, password, displayName);
-    } catch (err: any) {
-      setError(err.message || 'Failed to create account');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create account');
     } finally {
       setLoading(false);
     }

@@ -16,7 +16,7 @@ describe('useShapeSync - Concurrent Operations', () => {
     vi.mocked(firestore.deleteDoc).mockResolvedValue(undefined);
     vi.mocked(firestore.onSnapshot).mockImplementation((ref, onNext) => {
       if (typeof onNext === 'function') {
-        onNext({ docs: [] } as any);
+        onNext({ docs: [] } as firestore.QuerySnapshot);
       }
       return vi.fn();
     });
