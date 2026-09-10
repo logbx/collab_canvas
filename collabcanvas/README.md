@@ -113,6 +113,16 @@ npm test         # Run tests
 npm run lint     # Check code quality
 ```
 
+## ✅ Continuous Integration
+
+GitHub Actions CI runs automatically on push/PR to main branch:
+
+- **Tests**: All 10 tests pass (mocked Firebase/OpenAI for CI)
+- **Lint**: Code quality checks (warnings allowed)
+- **Build**: Production build verification
+
+Tests are designed to work without live Firebase or OpenAI API keys. The CI workflow uses mock credentials for verification.
+
 ## 🏗 Architecture
 
 See [architecture.md](../architecture.md) for detailed system architecture, data models, and implementation patterns.
