@@ -117,11 +117,20 @@ npm run lint     # Check code quality
 
 GitHub Actions CI runs automatically on push/PR to main branch:
 
-- **Tests**: All 10 tests pass (mocked Firebase/OpenAI for CI)
+- **Tests**: All 102 tests pass (comprehensive unit and integration tests)
+  - Pure utility functions: `canvasHelpers.ts`, `colorUtils.ts`
+  - React hooks: `useShapeSync` with concurrent operations
+  - All tests use mocked Firebase/OpenAI for CI compatibility
 - **Lint**: Code quality checks (warnings allowed)
 - **Build**: Production build verification
 
 Tests are designed to work without live Firebase or OpenAI API keys. The CI workflow uses mock credentials for verification.
+
+### Test Coverage
+
+- **Canvas Helpers** (60+ tests): ID generation, viewport calculations, angle math, line snapping
+- **Color Utilities** (32+ tests): Color hashing, randomization, throttling
+- **Shape Sync Hook** (10 tests): CRUD operations, locking, concurrent updates
 
 ## 🏗 Architecture
 
@@ -199,23 +208,21 @@ service cloud.firestore {
 
 ## ⚠️ Known Limitations
 
-- MVP uses a single hardcoded canvas (`global-canvas-v1`)
-- Only rectangle shapes supported
-- Simple last-write-wins conflict resolution
-- No undo/redo functionality
-- No shape styling options
+- **Single Canvas**: Uses a hardcoded canvas (`global-canvas-v1`) - no multi-canvas support
+- **Conflict Resolution**: Simple last-write-wins with object locking
+- **Firebase Free Tier**: Limited to 100 concurrent connections, 50K reads/day, 20K writes/day
+- **No Viewport Culling**: All shapes render even when off-screen (may impact performance with 1000+ shapes)
+- **Line Snapping Semantics**: `snapLineDelta` returns `isSnapped=true` even when no cardinal snapping occurs (when `snapAngle` returns the same angle, diff is 0)
 
-## 🚧 Future Enhancements (Phase 2)
+## 🚧 Future Enhancements
 
 - Multiple canvas support with routing
-- Additional shape types (circles, text, lines, arrows)
-- Shape styling (colors, borders, shadows)
-- Resize and rotate functionality
-- Multi-select with shift-click
-- Undo/redo system
-- AI agent integration
-- Viewport culling for performance
-- Canvas templates and export
+- Additional shape types (arrows, polygons, paths)
+- More styling options (gradients, patterns, shadows)
+- Viewport culling for better performance with large canvases
+- Mobile/touch support
+- Version history and time travel
+- Real-time commenting and annotations
 
 ## 📝 Development Guide
 
